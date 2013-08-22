@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Heavily based on script from < http://stackoverflow.com/a/17102611/1156377 >
+
+# Defaults
+IF=`ls -1 /sys/class/net/ | head -1`
+INTERVAL=2
+SCALE=1024
+SCALEPREFIX=k
+
+# Parse first param if it is not a switch
+if [ ! -z "$1" ] && [[ ! "$1" =~ ^- ]]
+then	if [ ! -e "/sys/class/net/$1" ]
+	then	echo "Adapter not found: $1"
+		exit 1
+	fi
+	IF=$1
+	shift
+fi
+
+# Parse switches
+while [ ! -z "$1" ]
+do
+	HANDLED=
+	if [ "$1" == "-n" ] || [ "$1" == "--interval" ]
+	then	shift
+		INTERVAL=$1
+		shift
+		HANDLED=yes
+	fi
+	if [ "$1" == "-b" ]
+	then	SCALE=1
+		SCALEPREFIX=
+		shift
+		HANDLED=yes
+	fi
+	if [ "$1" == "-k"  ] || [ "$1" == "-K" ]
+	then	SCALE=1024
+		SCALEPREFIX=k
+		shift
+		HANDLED=yes
+	fi
+	if [ "$1" == "-m" ] || [ "$1" == "-M" ]
+	then	SCALE=1048576
+		SCALEPREFIX=M
+		shift
+		HANDLED=yes
+	fi
+	if [ "$1" == "-1" ]
+	then	ONCE=yes
+		shift
+		HANDLED=yes
+	fi
+	if [ -z "$HANDLED" ]
+	then	echo "Invalid parameter: $1"
+		exit 2
+	fi
+done
+
+RXPREV=-1
+TXPREV=-1
+
+trap 'echo ""' exit
+echo "Monitoring $IF"
+
+# Loop measurements
+while true
+do	RX=`cat /sys/class/net/${IF}/statistics/rx_bytes`
+	TX=`cat /sys/class/net/${IF}/statistics/tx_bytes`
+	if [ $RXPREV -ne -1 ]
+	then	BWRX=`echo "scale=2; ($RX - $RXPREV) / $SCALE / $INTERVAL" | bc`
+		BWTX=`echo "scale=2; ($TX - $TXPREV) / $SCALE / $INTERVAL" | bc`
+		echo -ne "\rDown: $BWRX "$SCALEPREFIX"B/s, Up: $BWTX "$SCALEPREFIX"B/s"
+		if [ "$ONCE" == "yes" ]
+		then	exit 0
+		fi
+	fi
+	RXPREV=$RX
+	TXPREV=$TX
+	sleep $INTERVAL
+done
