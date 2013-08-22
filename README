@@ -1,0 +1,16 @@
+Title: 	netrate
+
+Description:
+	Script to monitor the data transfer rate over a network adapter
+
+Author:
+	Mark K Cowan, mark@battlesnake.co.uk
+
+Requires:
+	bc, bash
+
+Installation:
+	Symlink/copy to /usr/bin
+
+Usage:
+	`netrate --help` for instructions
