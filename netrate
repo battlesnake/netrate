@@ -2,6 +2,21 @@
 
 # Heavily based on script from < http://stackoverflow.com/a/17102611/1156377 >
 
+# Show help
+function showHelp {
+	echo "Network data transfer rate monitor"
+	echo ""
+	echo "	(C) Mark K Cowan, mark@battlesnake.co.uk"
+	echo ""
+	echo "	Syntax: netrate [adapter] [{-n|--interval} <interval>] [-b|-k|-m|-g] [-1]"
+	echo ""
+	echo "	<adapter> 	is the name of the adapter to monitor (e.g. eth0)"
+	echo "	<interval> 	is the interval to measure the rate over, in seconds"
+	echo "	-b, -k, -m, -g 	units to measure in (bytes/kB/MB/GB)"
+	echo "	-1 		perform one measurement then exit"
+	echo ""
+}
+
 # Defaults
 IF=`ls -1 /sys/class/net/ | head -1`
 INTERVAL=2
@@ -46,10 +61,20 @@ do
 		shift
 		HANDLED=yes
 	fi
+	if [ "$1" == "-g" ] || [ "$1" == "-G" ]
+	then	SCALE=1073741824
+		SCALEPREFIX=G
+		shift
+		HANDLED=yes
+	fi
 	if [ "$1" == "-1" ]
 	then	ONCE=yes
 		shift
 		HANDLED=yes
+	fi
+	if [ "$1" == "-h" ] || [ "$1" == "--help" ]
+	then	showHelp
+		exit 0
 	fi
 	if [ -z "$HANDLED" ]
 	then	echo "Invalid parameter: $1"
