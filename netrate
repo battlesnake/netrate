@@ -6,9 +6,9 @@
 function showHelp {
 	echo "Network data transfer rate monitor"
 	echo ""
-	echo "	(C) Mark K Cowan, mark@battlesnake.co.uk"
+	echo "(C) Mark K Cowan, mark@battlesnake.co.uk"
 	echo ""
-	echo "	Syntax: netrate [adapter] [{-n|--interval} <interval>] [-b|-k|-m|-g] [-1]"
+	echo "Syntax: netrate [adapter] [{-n|--interval} <interval>] [-b|-k|-m|-g] [-1]"
 	echo ""
 	echo "	<adapter> 	is the name of the adapter to monitor (e.g. eth0)"
 	echo "	<interval> 	is the interval to measure the rate over, in seconds"
@@ -95,7 +95,7 @@ do	RX=`cat /sys/class/net/${IF}/statistics/rx_bytes`
 	if [ $RXPREV -ne -1 ]
 	then	BWRX=`echo "scale=2; ($RX - $RXPREV) / $SCALE / $INTERVAL" | bc`
 		BWTX=`echo "scale=2; ($TX - $TXPREV) / $SCALE / $INTERVAL" | bc`
-		echo -ne "\rDown: $BWRX "$SCALEPREFIX"B/s, Up: $BWTX "$SCALEPREFIX"B/s"
+		echo -ne "\rDown: $BWRX "$SCALEPREFIX"B/s, Up: $BWTX "$SCALEPREFIX"B/s        "
 		if [ "$ONCE" == "yes" ]
 		then	exit 0
 		fi
