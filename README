@@ -1,7 +1,7 @@
 Title: 	netrate
 
 Description:
-	Script to monitor the data transfer rate over a network adapter
+	Script to monitor the data transfer rate over a network adapter (before I discovered iftop)
 
 Author:
 	Mark K Cowan, mark@battlesnake.co.uk
